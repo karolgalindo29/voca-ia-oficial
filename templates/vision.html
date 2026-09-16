@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Qué es? – I.E. San Luis de Gaceno</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Estilos adicionales para "Qué es" ─── */
+    .vision-header {
+      text-align: center;
+      max-width: 750px;
+      margin: 0 auto 60px;
+    }
+
+    .vision-header p {
+      color: var(--text-mid);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .vision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      margin-bottom: 60px;
+    }
+
+    .vision-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 30px;
+      transition: transform var(--transition), box-shadow var(--transition);
+      text-align: center;
+    }
+
+    .vision-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px var(--shadow);
+    }
+
+    .vision-card .icono-grande {
+      font-size: 52px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .vision-card h3 {
+      font-family: var(--font-title);
+      font-size: 22px;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    .vision-card p {
+      color: var(--text-mid);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ─── Sección de valores ─── */
+    .valores-section {
+      background: var(--bg-alt);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      margin-bottom: 48px;
+    }
+
+    .valores-section h3 {
+      font-family: var(--font-title);
+      font-size: 28px;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .valores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .valor-item {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .valor-item .valor-icono {
+      font-size: 36px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .valor-item h4 {
+      font-size: 16px;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .valor-item p {
+      font-size: 13px;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    /* ─── Estadísticas ─── */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 24px;
+      margin: 40px 0 48px;
+    }
+
+    .stat-item {
+      background: var(--accent-dark);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .stat-item .stat-numero {
+      font-family: var(--font-title);
+      font-size: 44px;
+      font-weight: 700;
+      color: #e8a87c;
+      display: block;
+    }
+
+    .stat-item .stat-label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ─── Preguntas frecuentes ─── */
+    .faq-container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+
+    .faq-item:hover {
+      border-color: var(--accent);
+    }
+
+    .faq-pregunta {
+      width: 100%;
+      padding: 18px 24px;
+      background: none;
+      border: none;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-body);
+      transition: color var(--transition);
+    }
+
+    .faq-pregunta:hover {
+      color: var(--accent);
+    }
+
+    .faq-pregunta .faq-icono {
+      font-size: 20px;
+      transition: transform var(--transition);
+    }
+
+    .faq-item.abierto .faq-pregunta .faq-icono {
+      transform: rotate(180deg);
+    }
+
+    .faq-respuesta {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 24px;
+      color: var(--text-mid);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .faq-item.abierto .faq-respuesta {
+      max-height: 300px;
+      padding: 0 24px 20px;
+    }
+
+    .faq-respuesta strong {
+      color: var(--accent);
+    }
+
+    /* ─── Llamada a la acción ─── */
+    .cta-vision {
+      text-align: center;
+      background: var(--bg-alt);
+      border-radius: var(--radius);
+      padding: 48px 36px;
+      margin-top: 20px;
+    }
+
+    .cta-vision h3 {
+      font-family: var(--font-title);
+      font-size: 28px;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .cta-vision p {
+      color: var(--text-mid);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .valores-section {
+        padding: 32px 20px;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-item .stat-numero {
+        font-size: 32px;
+      }
+
+      .cta-vision {
+        padding: 32px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .vision-card {
+        padding: 28px 20px;
+      }
+
+      .faq-pregunta {
+        font-size: 14px;
+        padding: 14px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+      <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}" class="nav-link">Inicio</a></li>
+      <li><a href="{{ url_for('vision') }}" class="nav-link active">¿Qué es?</a></li>
+      <li><a href="{{ url_for('areas') }}" class="nav-link">Áreas</a></li>
+      <li><a href="{{ url_for('test') }}" class="nav-link">Test</a></li>
+      <li><a href="{{ url_for('chatbot') }}" class="nav-link">Asistente IA</a></li>
+      <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
+    </ul>
+    <a href="{{ url_for('test') }}" class="btn-nav">COMENZAR TEST</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- ══════════════════ ¿QUÉ ES? ══════════════════ -->
+  <section class="sobre" id="sobre" style="padding-top: 120px;">
+    <div class="container">
+
+      <!-- Encabezado -->
+      <div class="vision-header">
+        <p class="section-label">NUESTRA MISIÓN</p>
+        <h2 class="section-title">¿Qué es la orientación<br /><em>vocacional?</em></h2>
+        <p>La orientación vocacional es un proceso de acompañamiento que te ayuda a descubrir tus intereses, habilidades y talentos para tomar decisiones informadas sobre tu futuro académico y profesional.</p>
+      </div>
+
+      <!-- Tarjetas principales -->
+      <div class="vision-grid">
+        <div class="vision-card">
+          <span class="icono-grande">🧭</span>
+          <h3>Descubre tus talentos</h3>
+          <p>Identifica tus habilidades, intereses y personalidad para encontrar la carrera que realmente te apasione y en la que puedas destacar.</p>
+        </div>
+        <div class="vision-card">
+          <span class="icono-grande">🗺️</span>
+          <h3>Explora opciones</h3>
+          <p>Conoce las diferentes áreas del conocimiento y las carreras disponibles en Colombia para tomar una decisión informada y acertada.</p>
+        </div>
+        <div class="vision-card">
+          <span class="icono-grande">🌟</span>
+          <h3>Construye tu futuro</h3>
+          <p>Con la orientación adecuada, estarás preparado para ingresar a la educación superior con confianza, claridad y propósito.</p>
+        </div>
+      </div>
+
+      <!-- ─── VALORES ─── -->
+<div class="valores-section">
+  <div class="valores-header">
+    <span class="linea-decorativa"></span>
+    <h3>Nuestros valores</h3>
+    <span class="linea-decorativa"></span>
+  </div>
+  
+  <div class="valores-grid">
+    <div class="valor-item">
+      <span class="valor-icono">🤝</span>
+      <h4>Empatía</h4>
+      <p>Te escuchamos y entendemos tus inquietudes para brindarte el mejor acompañamiento.</p>
+    </div>
+    <div class="valor-item">
+      <span class="valor-icono">📊</span>
+      <h4>Precisión</h4>
+      <p>Utilizamos herramientas basadas en datos para ofrecerte recomendaciones acertadas.</p>
+    </div>
+    <!-- Se eliminó el bloque de Innovación aquí -->
+    <div class="valor-item">
+      <span class="valor-icono">🌱</span>
+      <h4>Compromiso</h4>
+      <p>Estamos dedicados a ayudarte a construir un futuro lleno de oportunidades.</p>
+    </div>
+  </div>
+</div>
+
+      <!-- ─── ESTADÍSTICAS ─── -->
+      <div class="stats-container">
+        <div class="stat-item">
+          <span class="stat-numero">6</span>
+          <span class="stat-label">Áreas del conocimiento</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-numero">50+</span>
+          <span class="stat-label">Carreras disponibles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-numero">15+</span>
+          <span class="stat-label">Universidades recomendadas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-numero">100%</span>
+          <span class="stat-label">Gratuito para estudiantes</span>
+        </div>
+      </div>
+
+      <!-- ─── PREGUNTAS FRECUENTES ─── -->
+      <h2 class="section-title" style="text-align:center; margin-bottom: 40px;">Preguntas <em>frecuentes</em></h2>
+
+      <div class="faq-container">
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Qué es la orientación vocacional?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            Es un proceso de acompañamiento que te ayuda a identificar tus intereses, habilidades y valores para elegir una carrera o profesión que se alinee con tu perfil personal y tus metas de vida.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Cómo funciona el test vocacional?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            El test consta de <strong>6 preguntas</strong> con opciones de respuesta. Según tus respuestas, el sistema analiza tus preferencias y te muestra el área del conocimiento con la que tienes mayor afinidad, junto con carreras recomendadas.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Es gratuito el test?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            ¡Sí! El test vocacional de <strong>Voca-IA</strong> es completamente gratuito para todos los estudiantes de la I.E. San Luis de Gaceno y sus alrededores.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Qué hago después de obtener mis resultados?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            Después de recibir tu perfil vocacional, puedes explorar las <strong>áreas del conocimiento</strong>, consultar con nuestro <strong>Asistente IA</strong> para resolver dudas específicas, o contactar a un <strong>orientador</strong> para un acompañamiento personalizado.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Cómo me ayuda el Asistente IA?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            El Asistente IA puede resolver tus preguntas sobre carreras, universidades, requisitos de ingreso, salidas profesionales y más. Es como tener un <strong>orientador virtual</strong> disponible 24/7.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-pregunta" onclick="toggleFAQ(this)">
+            ¿Puedo repetir el test?
+            <span class="faq-icono">▼</span>
+          </button>
+          <div class="faq-respuesta">
+            Sí, puedes repetir el test las veces que quieras. Tus intereses pueden evolucionar con el tiempo, y estamos aquí para acompañarte en cada etapa de tu proceso de descubrimiento.
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── LLAMADA A LA ACCIÓN ─── -->
+      <div class="cta-vision">
+        <h3> ¿Listo para descubrir tu camino?</h3>
+        <p>Realiza nuestro test vocacional y da el primer paso hacia un futuro lleno de oportunidades.</p>
+        <div class="cta-buttons">
+          <a href="{{ url_for('test') }}" class="btn-primary">COMENZAR TEST</a>
+          <a href="{{ url_for('chatbot') }}" class="btn-secondary">ASISTENTE IA</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+        <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+      </div>
+      <p class="footer-copy">© 2026 I.E. San Luis de Gaceno · Orientación Vocacional</p>
+      <p class="footer-credit">Boyacá, Colombia</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  <script>
+    // ─── FUNCIÓN PARA ACORDEÓN DE FAQ ───
+    function toggleFAQ(boton) {
+      const item = boton.parentElement;
+      const estaAbierto = item.classList.contains('abierto');
+
+      // Cerrar todos los FAQ
+      document.querySelectorAll('.faq-item').forEach(function(el) {
+        el.classList.remove('abierto');
+      });
+
+      // Abrir el que se hizo clic si estaba cerrado
+      if (!estaAbierto) {
+        item.classList.add('abierto');
+      }
+    }
+
+    // ─── ABRIR EL PRIMER FAQ POR DEFECTO ───
+    document.addEventListener('DOMContentLoaded', function() {
+      const primerFaq = document.querySelector('.faq-item');
+      if (primerFaq) {
+        primerFaq.classList.add('abierto');
+      }
+    });
+  </script>
+</body>
+</html>

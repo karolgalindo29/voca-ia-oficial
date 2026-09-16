@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Vocacional – I.E. San Luis de Gaceno</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Estilos para los botones binarios */
+    .opcion-btn.opcion-si:hover {
+      border-color: #2e7d32;
+      background: #f1f8e9;
+      color: #2e7d32;
+    }
+    .opcion-btn.opcion-si.selected {
+      border-color: #2e7d32;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-weight: 700;
+    }
+    .opcion-btn.opcion-no:hover {
+      border-color: #c62828;
+      background: #ffebee;
+      color: #c62828;
+    }
+    .opcion-btn.opcion-no.selected {
+      border-color: #c62828;
+      background: #ffebee;
+      color: #c62828;
+      font-weight: 700;
+    }
+    .test-intro-nota {
+      background: var(--bg);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-top: 24px;
+      text-align: left;
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.7;
+    }
+    .test-intro-nota strong {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+ <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+      <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}" class="nav-link">Inicio</a></li>
+      <li><a href="{{ url_for('vision') }}" class="nav-link">¿Qué es?</a></li>
+      <li><a href="{{ url_for('areas') }}" class="nav-link">Áreas</a></li>
+      <li><a href="{{ url_for('test') }}" class="nav-link active">Test</a></li>
+      <li><a href="{{ url_for('chatbot') }}" class="nav-link">Asistente IA</a></li>
+      <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
+    </ul>
+    <a href="{{ url_for('test') }}" class="btn-nav">COMENZAR TEST</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- ══════════════════ TEST VOCACIONAL ══════════════════ -->
+  <section class="test-section" id="test" style="padding-top: 120px;">
+    <div class="container">
+      <p class="section-label">DESCUBRE TU PERFIL</p>
+      <h2 class="section-title">Test de Intereses<br /><em>Vocacionales y Profesionales</em></h2>
+
+      <!-- Pantalla inicial del test -->
+      <div id="test-inicio" class="test-inicio">
+        <div class="test-intro-card">
+          <p class="test-intro-text">
+            Este test tiene <strong>80 preguntas</strong> y toma aproximadamente <strong>10 minutos</strong>.
+            Para cada pregunta debes indicar si <strong>te interesa</strong> o <strong>no te interesa</strong>.
+          </p>
+          <div class="test-intro-features">
+            <span> Gratuito</span>
+            <span> 5 áreas de interés</span>
+            <span> Personalizado</span>
+          </div>
+          <div class="test-intro-nota">
+            <strong> Instrucciones:</strong><br>
+            1. Lee atentamente cada actividad.<br>
+            2. Marca "Me interesa" o "No me interesa" según tu propia decisión.<br>
+            3. No existen respuestas correctas o incorrectas. Lo importante es que contestes con sinceridad y confianza.
+          </div>
+          <button class="btn-primary" onclick="iniciarTest()" style="margin-top: 28px;">INICIAR TEST AHORA</button>
+        </div>
+      </div>
+
+      <!-- Preguntas del test -->
+      <div id="test-preguntas" class="test-preguntas hidden">
+        <div class="progress-bar-container">
+          <div class="progress-info">
+            <span id="pregunta-num">Pregunta 1 de 80</span>
+            <span id="progreso-pct">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="pregunta-card" id="pregunta-card">
+          <p class="pregunta-numero" id="pregunta-numero-display">01</p>
+          <h3 class="pregunta-texto" id="pregunta-texto">Cargando…</h3>
+          <div class="opciones-grid" id="opciones-container">
+            <!-- Opciones generadas por JS -->
+          </div>
+        </div>
+
+        <div class="test-nav">
+          <button class="btn-secondary" id="btn-anterior" onclick="anteriorPregunta()" disabled>← Anterior</button>
+          <button class="btn-primary" id="btn-siguiente" onclick="siguientePregunta()" disabled>Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- Resultado del test -->
+      <div id="test-resultado" class="test-resultado hidden">
+        <div class="resultado-header">
+          <p class="section-label">TU PERFIL VOCACIONAL</p>
+          <h3 class="resultado-titulo" id="resultado-nombre">–</h3>
+          <p class="resultado-desc" id="resultado-desc">–</p>
+        </div>
+
+        <div class="resultado-grid">
+          <div class="resultado-main" id="resultado-main">
+            <!-- Llenado por JS -->
+          </div>
+          <div class="resultado-otros" id="resultado-otros">
+            <!-- Llenado por JS -->
+          </div>
+        </div>
+
+        <div class="resultado-acciones">
+          <button class="btn-primary" onclick="reiniciarTest()"> REPETIR TEST</button>
+          <a href="{{ url_for('areas') }}" class="btn-secondary"> VER TODAS LAS ÁREAS</a>
+          <a href="{{ url_for('chatbot') }}" class="btn-secondary"> CONSULTAR AL ASISTENTE IA</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+        <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+      </div>
+      <p class="footer-copy">© 2026 I.E. San Luis de Gaceno · Orientación Vocacional</p>
+      <p class="footer-credit">Boyacá, Colombia</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

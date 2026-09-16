@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Áreas del Conocimiento – I.E. San Luis de Gaceno</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Estilos adicionales para áreas ─── */
+    .areas-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 60px;
+    }
+
+    .areas-header p {
+      color: var(--text-mid);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .area-card-expandido {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      margin-bottom: 28px;
+    }
+
+    .area-card-expandido:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .area-card-expandido .area-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .area-card-expandido .area-icono {
+      font-size: 44px;
+    }
+
+    .area-card-expandido .area-nombre {
+      font-family: var(--font-title);
+      font-size: 26px;
+      color: var(--text-dark);
+    }
+
+    .area-card-expandido .area-desc {
+      color: var(--text-mid);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .area-detalles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+      margin: 16px 0 20px;
+    }
+
+    .area-detalles-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .area-detalles-item .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      font-weight: 700;
+    }
+
+    .area-detalles-item .valor {
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+
+    .area-detalles-item .valor strong {
+      color: var(--accent);
+    }
+
+    .area-detalles-item .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .area-detalles-item .tags .tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 3px 12px;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .area-universidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .area-universidades .uni-tag {
+      background: var(--bg-alt);
+      border-radius: 50px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--text-mid);
+      font-weight: 700;
+    }
+
+    .area-demanda {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .demanda-barra {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 140px;
+    }
+
+    .demanda-barra .fill {
+      height: 100%;
+      border-radius: 10px;
+      background: var(--accent);
+    }
+
+    .area-duracion {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .area-duracion .duracion-icon {
+      font-size: 18px;
+    }
+
+    .btn-ver-carreras {
+      display: inline-block;
+      background: transparent;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      border-radius: 50px;
+      padding: 10px 28px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all var(--transition);
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
+    .btn-ver-carreras:hover {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .btn-ver-carreras i {
+      margin-right: 6px;
+    }
+
+    /* ─── Modal de carreras ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 40px 36px;
+      position: relative;
+      animation: fadeUp 0.4s ease both;
+      border: 1px solid var(--border);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-mid);
+      transition: color var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--accent);
+    }
+
+    .modal-title {
+      font-family: var(--font-title);
+      font-size: 28px;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      color: var(--text-mid);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .carrera-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .carrera-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .carrera-item:hover {
+      border-color: var(--accent);
+      background: var(--white);
+      transform: translateX(4px);
+    }
+
+    .carrera-item .carrera-nombre {
+      font-size: 15px;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .carrera-item .carrera-icono {
+      font-size: 20px;
+      color: var(--accent);
+      transition: transform var(--transition);
+    }
+
+    .carrera-item:hover .carrera-icono {
+      transform: translateX(4px);
+    }
+
+    .modal-chat-hint {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: var(--bg-alt);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-mid);
+      border: 1px dashed var(--border);
+    }
+
+    .modal-chat-hint strong {
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .area-detalles {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .area-card-expandido {
+        padding: 28px 20px;
+      }
+
+      .area-card-expandido .area-header {
+        gap: 12px;
+      }
+
+      .area-card-expandido .area-nombre {
+        font-size: 22px;
+      }
+
+      .modal-content {
+        padding: 28px 20px;
+      }
+
+      .modal-title {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .area-card-expandido .area-icono {
+        font-size: 32px;
+      }
+
+      .area-card-expandido .area-nombre {
+        font-size: 20px;
+      }
+
+      .area-demanda {
+        flex-wrap: wrap;
+      }
+
+      .demanda-barra {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+      <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}" class="nav-link">Inicio</a></li>
+      <li><a href="{{ url_for('vision') }}" class="nav-link">¿Qué es?</a></li>
+      <li><a href="{{ url_for('areas') }}" class="nav-link active">Áreas</a></li>
+      <li><a href="{{ url_for('test') }}" class="nav-link">Test</a></li>
+      <li><a href="{{ url_for('chatbot') }}" class="nav-link">Asistente IA</a></li>
+      <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
+    </ul>
+    <a href="{{ url_for('test') }}" class="btn-nav">COMENZAR TEST</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- ══════════════════ ÁREAS ══════════════════ -->
+  <section class="areas" id="areas" style="padding-top: 120px;">
+    <div class="container">
+
+      <!-- Encabezado -->
+      <div class="areas-header">
+        <p class="section-label">EXPLORA</p>
+        <h2 class="section-title">Áreas del<br /><em>conocimiento</em></h2>
+        <p>Conoce las diferentes áreas de estudio, sus carreras, salidas profesionales y universidades donde puedes formarte. Encuentra el camino que mejor se adapta a tus intereses y talentos.</p>
+      </div>
+
+      <!-- ─── CIENCIAS E INGENIERÍA ─── -->
+      <div class="area-card-expandido" data-area="ciencias">
+        <div class="area-header">
+          <span class="area-icono">🔬</span>
+          <h3 class="area-nombre">Ciencias e Ingeniería</h3>
+        </div>
+        <p class="area-desc">Para mentes analíticas y curiosas que buscan entender y transformar el mundo a través de la ciencia, la tecnología y la innovación.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Ingeniería de Sistemas</span>
+              <span class="tag">Medicina</span>
+              <span class="tag">Biología</span>
+              <span class="tag">Química</span>
+              <span class="tag">Física</span>
+              <span class="tag">Ingeniería Civil</span>
+              <span class="tag">Ingeniería Ambiental</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Investigador científico · Ingeniero de software · Médico especialista · Docente universitario · Consultor ambiental</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>80%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:80%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">4 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 Universidad Nacional de Colombia</span>
+            <span class="uni-tag">🏫 UPTC Tunja</span>
+            <span class="uni-tag">🏫 Universidad de los Andes</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Ciencias e Ingeniería')">📚 Ver todas las carreras</button>
+      </div>
+
+      <!-- ─── HUMANIDADES Y CIENCIAS SOCIALES ─── -->
+      <div class="area-card-expandido" data-area="humanidades">
+        <div class="area-header">
+          <span class="area-icono">📚</span>
+          <h3 class="area-nombre">Humanidades y Ciencias Sociales</h3>
+        </div>
+        <p class="area-desc">Para personas empáticas, reflexivas y comprometidas con el bienestar social, la justicia y la transformación cultural.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Derecho</span>
+              <span class="tag">Psicología</span>
+              <span class="tag">Trabajo Social</span>
+              <span class="tag">Historia</span>
+              <span class="tag">Filosofía</span>
+              <span class="tag">Comunicación Social</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Psicólogo clínico · Abogado · Docente · Investigador social · Comunicador · Trabajador social</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>65%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:65%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">4 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 Universidad Externado</span>
+            <span class="uni-tag">🏫 Universidad Javeriana</span>
+            <span class="uni-tag">🏫 Universidad de Boyacá</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Humanidades y Ciencias Sociales')">📚 Ver todas las carreras</button>
+      </div>
+
+      <!-- ─── ARTES Y DISEÑO ─── -->
+      <div class="area-card-expandido" data-area="artes">
+        <div class="area-header">
+          <span class="area-icono">🎨</span>
+          <h3 class="area-nombre">Artes y Diseño</h3>
+        </div>
+        <p class="area-desc">Para almas creativas y expresivas con sensibilidad estética, que buscan emocionar, inspirar y transformar a través del arte y el diseño.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Diseño Gráfico</span>
+              <span class="tag">Artes Plásticas</span>
+              <span class="tag">Música</span>
+              <span class="tag">Teatro</span>
+              <span class="tag">Arquitectura</span>
+              <span class="tag">Publicidad</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Diseñador gráfico · Artista plástico · Arquitecto · Director creativo · Músico · Actor</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>60%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:60%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">4 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 Universidad de los Andes</span>
+            <span class="uni-tag">🏫 Bellas Artes Bogotá</span>
+            <span class="uni-tag">🏫 Universidad Jorge Tadeo Lozano</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Artes y Diseño')">📚 Ver todas las carreras</button>
+      </div>
+
+      <!-- ─── TECNOLOGÍA E INFORMÁTICA ─── -->
+      <div class="area-card-expandido" data-area="tecnologia">
+        <div class="area-header">
+          <span class="area-icono">💻</span>
+          <h3 class="area-nombre">Tecnología e Informática</h3>
+        </div>
+        <p class="area-desc">Para innovadores digitales apasionados por la tecnología, la programación y las soluciones que transforman la forma en que vivimos y trabajamos.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Ingeniería de Sistemas</span>
+              <span class="tag">Desarrollo de Software</span>
+              <span class="tag">Seguridad Informática</span>
+              <span class="tag">Diseño Web</span>
+              <span class="tag">Administración de Redes</span>
+              <span class="tag">Inteligencia Artificial</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Desarrollador de software · Arquitecto de datos · Especialista en ciberseguridad · Emprendedor tecnológico · Consultor TI</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>92%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:92%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">3 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 SENA</span>
+            <span class="uni-tag">🏫 Universidad Nacional</span>
+            <span class="uni-tag">🏫 Politécnico Grancolombiano</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Tecnología e Informática')">📚 Ver todas las carreras</button>
+      </div>
+
+      <!-- ─── NEGOCIOS Y ADMINISTRACIÓN ─── -->
+      <div class="area-card-expandido" data-area="negocios">
+        <div class="area-header">
+          <span class="area-icono">📊</span>
+          <h3 class="area-nombre">Negocios y Administración</h3>
+        </div>
+        <p class="area-desc">Para líderes estratégicos, organizados y con visión emprendedora, capaces de gestionar y hacer crecer organizaciones exitosas.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Administración de Empresas</span>
+              <span class="tag">Contaduría Pública</span>
+              <span class="tag">Economía</span>
+              <span class="tag">Mercadeo</span>
+              <span class="tag">Finanzas</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Gerente de empresas · Contador público · Consultor financiero · Emprendedor · Analista de mercado</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>75%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:75%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">4 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 Universidad EAN</span>
+            <span class="uni-tag">🏫 Uninorte</span>
+            <span class="uni-tag">🏫 Universidad de Boyacá</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Negocios y Administración')">📚 Ver todas las carreras</button>
+      </div>
+
+      <!-- ─── EDUCACIÓN Y PEDAGOGÍA ─── -->
+      <div class="area-card-expandido" data-area="educacion">
+        <div class="area-header">
+          <span class="area-icono">🎓</span>
+          <h3 class="area-nombre">Educación y Pedagogía</h3>
+        </div>
+        <p class="area-desc">Para personas con vocación de servicio, paciencia y amor por formar a otros, guiando a las nuevas generaciones hacia un mejor futuro.</p>
+
+        <div class="area-detalles">
+          <div class="area-detalles-item">
+            <span class="label">Carreras destacadas</span>
+            <div class="tags">
+              <span class="tag">Lic. en Matemáticas</span>
+              <span class="tag">Lic. en Español</span>
+              <span class="tag">Lic. en Ciencias Naturales</span>
+              <span class="tag">Educación Infantil</span>
+              <span class="tag">Educación Especial</span>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Salidas profesionales</span>
+            <div class="valor">Docente de colegio · Pedagogo · Orientador educativo · Capacitador empresarial · Investigador educativo</div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Demanda laboral</span>
+            <div class="area-demanda">
+              <span class="valor"><strong>70%</strong></span>
+              <div class="demanda-barra">
+                <div class="fill" style="width:70%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="area-detalles-item">
+            <span class="label">Duración promedio</span>
+            <div class="area-duracion">
+              <span class="duracion-icon">⏱️</span>
+              <span class="valor">4 – 5 años</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="area-detalles-item" style="grid-column: 1 / -1;">
+          <span class="label">Universidades recomendadas</span>
+          <div class="area-universidades">
+            <span class="uni-tag">🏫 UPTC Tunja</span>
+            <span class="uni-tag">🏫 Universidad Pedagógica Nacional</span>
+            <span class="uni-tag">🏫 Universidad de Boyacá</span>
+          </div>
+        </div>
+
+        <button class="btn-ver-carreras" onclick="abrirModal(this, 'Educación y Pedagogía')">📚 Ver todas las carreras</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════ MODAL DE CARRERAS ══════════════════ -->
+  <div class="modal-overlay" id="modalCarreras">
+    <div class="modal-content">
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+      <h3 class="modal-title" id="modalTitulo">Carreras</h3>
+      <p class="modal-subtitle" id="modalSubtitulo">Selecciona una carrera para consultar con el asistente IA</p>
+      <div class="carrera-lista" id="carreraLista">
+        <!-- Se llena con JavaScript -->
+      </div>
+      <div class="modal-chat-hint">
+        💬 Haz clic en cualquier carrera y el <strong>Asistente IA</strong> te dará información personalizada.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+        <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+      </div>
+      <p class="footer-copy">© 2026 I.E. San Luis de Gaceno · Orientación Vocacional</p>
+      <p class="footer-credit">Boyacá, Colombia</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  <script>
+    // ─── DATOS DE CARRERAS POR ÁREA ───
+    const carrerasPorArea = {
+      'Ciencias e Ingeniería': [
+        'Ingeniería de Sistemas',
+        'Medicina',
+        'Biología',
+        'Química',
+        'Física',
+        'Ingeniería Civil',
+        'Ingeniería Ambiental',
+        'Ingeniería Mecánica',
+        'Ingeniería Industrial',
+        'Enfermería',
+        'Odontología',
+        'Fisioterapia'
+      ],
+      'Humanidades y Ciencias Sociales': [
+        'Derecho',
+        'Psicología',
+        'Trabajo Social',
+        'Historia',
+        'Filosofía',
+        'Comunicación Social',
+        'Sociología',
+        'Antropología',
+        'Ciencia Política',
+        'Relaciones Internacionales'
+      ],
+      'Artes y Diseño': [
+        'Diseño Gráfico',
+        'Artes Plásticas',
+        'Música',
+        'Teatro',
+        'Arquitectura',
+        'Publicidad',
+        'Diseño Industrial',
+        'Diseño de Modas',
+        'Diseño de Interiores',
+        'Danza'
+      ],
+      'Tecnología e Informática': [
+        'Ingeniería de Sistemas',
+        'Desarrollo de Software',
+        'Seguridad Informática',
+        'Diseño Web',
+        'Administración de Redes',
+        'Inteligencia Artificial',
+        'Ciencia de Datos',
+        'Blockchain',
+        'Desarrollo de Videojuegos',
+        'Cloud Computing'
+      ],
+      'Negocios y Administración': [
+        'Administración de Empresas',
+        'Contaduría Pública',
+        'Economía',
+        'Mercadeo',
+        'Finanzas',
+        'Administración Pública',
+        'Administración Hotelera',
+        'Administración Deportiva',
+        'Comercio Internacional'
+      ],
+      'Educación y Pedagogía': [
+        'Lic. en Matemáticas',
+        'Lic. en Español',
+        'Lic. en Ciencias Naturales',
+        'Educación Infantil',
+        'Educación Especial',
+        'Lic. en Inglés',
+        'Lic. en Ciencias Sociales',
+        'Lic. en Artes',
+        'Educación Física'
+      ]
+    };
+
+    // ─── FUNCIONES DEL MODAL ───
+    function abrirModal(boton, areaNombre) {
+      const modal = document.getElementById('modalCarreras');
+      const titulo = document.getElementById('modalTitulo');
+      const subtitulo = document.getElementById('modalSubtitulo');
+      const lista = document.getElementById('carreraLista');
+
+      // Obtener carreras del área
+      const carreras = carrerasPorArea[areaNombre] || [];
+
+      // Actualizar título
+      titulo.textContent = `🎯 ${areaNombre}`;
+      subtitulo.textContent = `📚 ${carreras.length} carreras disponibles. Haz clic en una para consultar al asistente IA.`;
+
+      // Generar lista de carreras
+      lista.innerHTML = '';
+      carreras.forEach(function(carrera) {
+        const item = document.createElement('div');
+        item.className = 'carrera-item';
+        item.innerHTML = `
+          <span class="carrera-nombre">${carrera}</span>
+          <span class="carrera-icono">➜</span>
+        `;
+        item.onclick = function() {
+          preguntarAlChatbot(carrera, areaNombre);
+        };
+        lista.appendChild(item);
+      });
+
+      // Mostrar modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById('modalCarreras');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar modal al hacer clic en el overlay
+    document.getElementById('modalCarreras').addEventListener('click', function(e) {
+      if (e.target === this) {
+        cerrarModal();
+      }
+    });
+
+    // ─── FUNCIÓN PARA PREGUNTAR AL CHATBOT ───
+    function preguntarAlChatbot(carrera, area) {
+      cerrarModal();
+
+      // Mensaje personalizado para el chatbot
+      const mensaje = `Hola, estoy interesado en la carrera de ${carrera} del área de ${area}. ¿Qué me puedes contar sobre esta carrera, sus salidas profesionales y dónde puedo estudiarla en Colombia?`;
+
+      // Redirigir al chatbot con el mensaje
+      // Usamos encodeURIComponent para enviar el mensaje en la URL
+      window.location.href = "{{ url_for('chatbot') }}?mensaje=" + encodeURIComponent(mensaje);
+    }
+
+    // ─── SI EL CHATBOT RECIBE UN MENSAJE POR URL ───
+    // Esta función se ejecuta cuando la página del chatbot carga
+    // (se debe agregar en chatbot.html)
+    function recibirMensajeDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      const mensaje = params.get('mensaje');
+      if (mensaje) {
+        // Esperar a que el chatbot cargue y enviar el mensaje
+        setTimeout(function() {
+          const input = document.getElementById('chat-input');
+          if (input) {
+            input.value = mensaje;
+            enviarChat();
+          }
+        }, 1000);
+      }
+    }
+
+    // Si estamos en la página del chatbot, ejecutar la función
+    if (window.location.pathname.includes('chatbot')) {
+      document.addEventListener('DOMContentLoaded', recibirMensajeDesdeURL);
+    }
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        cerrarModal();
+      }
+    });
+  </script>
+</body>
+</html>

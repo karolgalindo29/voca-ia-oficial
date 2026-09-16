@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f5ede3;padding:20px;">
+
+<div style="background:#fdf6ee;padding:40px;border-radius:18px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(90, 55, 30, 0.1);border:1px solid #e0cfc0;">
+
+    <h2 style="text-align:center;font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;color:#3b2a1e;"> Regístrate</h2>
+    <p style="text-align:center;color:#6b5040;margin-bottom:30px;">Crea tu cuenta gratis</p>
+
+    {% if error %}
+    <div style="background:#efe5d8;padding:12px;border-radius:10px;color:#6b5040;margin-bottom:20px;text-align:center;border-left:3px solid #b5673a;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        <div style="margin-bottom:16px;">
+            <label style="display:block;font-weight:700;color:#6b5040;margin-bottom:6px;">Nombre completo</label>
+            <input type="text" name="nombre" required style="width:100%;padding:12px;border:2px solid #e0cfc0;border-radius:10px;font-size:15px;background:#fffaf6;color:#3b2a1e;">
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <label style="display:block;font-weight:700;color:#6b5040;margin-bottom:6px;">Email</label>
+            <input type="email" name="email" required style="width:100%;padding:12px;border:2px solid #e0cfc0;border-radius:10px;font-size:15px;background:#fffaf6;color:#3b2a1e;">
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="display:block;font-weight:700;color:#6b5040;margin-bottom:6px;">Contraseña (mínimo 6 caracteres)</label>
+            <input type="password" name="password" required minlength="6" style="width:100%;padding:12px;border:2px solid #e0cfc0;border-radius:10px;font-size:15px;background:#fffaf6;color:#3b2a1e;">
+        </div>
+
+        <button type="submit" style="width:100%;padding:14px;background:#b5673a;color:#fffaf6;border:none;border-radius:50px;font-weight:700;cursor:pointer;font-size:14px;">
+            REGISTRARME
+        </button>
+    </form>
+
+    <p style="text-align:center;margin-top:20px;color:#6b5040;">
+        ¿Ya tienes cuenta? <a href="/login" style="color:#b5673a;font-weight:700;">Inicia sesión</a>
+    </p>
+</div>
+
+</body>
+</html>

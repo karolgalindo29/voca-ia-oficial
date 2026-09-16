@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Voca-IA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-simple {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5ede3;
+            padding: 20px;
+        }
+
+        .dashboard-card {
+            background: #fdf6ee;
+            padding: 60px 50px;
+            border-radius: 18px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(90, 55, 30, 0.1);
+            border: 1px solid #e0cfc0;
+        }
+
+        .dashboard-card .avatar {
+            font-size: 72px;
+            margin-bottom: 16px;
+        }
+
+        .dashboard-card h1 {
+            font-family: var(--font-title);
+            font-size: 32px;
+            color: #3b2a1e;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-card h1 span {
+            color: #b5673a;
+        }
+
+        .dashboard-card .subtitle {
+            color: #6b5040;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .dashboard-card .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-dashboard {
+            display: block;
+            padding: 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all var(--transition);
+            text-align: center;
+        }
+
+        .btn-dashboard.primary {
+            background: #b5673a;
+            color: #fffaf6;
+        }
+
+        .btn-dashboard.primary:hover {
+            background: #3b2a1e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(90, 55, 30, 0.25);
+        }
+
+        .btn-dashboard.danger {
+            background: transparent;
+            color: #6b5040;
+            border: 2px solid #d9c4ae;
+        }
+
+        .btn-dashboard.danger:hover {
+            background: #efe5d8;
+            color: #3b2a1e;
+            border-color: #b5673a;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-card .footer-info {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e0cfc0;
+            font-size: 13px;
+            color: #9c7c65;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR SIMPLE -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+            <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('inicio') }}" class="nav-link">Inicio</a></li>
+            <li><a href="{{ url_for('logout') }}" class="nav-link" style="color:#9c7c65;font-weight:700;">Cerrar Sesión</a></li>
+        </ul>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+    </nav>
+    <!-- DASHBOARD -->
+    <div class="dashboard-simple">
+        <div class="dashboard-card">
+            <div class="avatar"></div>
+            <h1>Bienvenido, <span>{{ usuario.nombre }}</span></h1>
+            <p class="subtitle">Has iniciado sesión correctamente.</p>
+
+            <div class="btn-group">
+                <a href="{{ url_for('inicio') }}" class="btn-dashboard primary">
+                     Ir a la página principal
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn-dashboard danger">
+                     Cerrar sesión
+                </a>
+            </div>
+
+            <div class="footer-info">
+                Último acceso: {{ usuario.fecha_registro.strftime('%d/%m/%Y %H:%M') if usuario.fecha_registro else 'Primera vez' }}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

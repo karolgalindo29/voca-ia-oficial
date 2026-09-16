@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistente IA – I.E. San Luis de Gaceno</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="{{ url_for('index') }}" class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+      <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}" class="nav-link">Inicio</a></li>
+      <li><a href="{{ url_for('vision') }}" class="nav-link">¿Qué es?</a></li>
+      <li><a href="{{ url_for('areas') }}" class="nav-link">Áreas</a></li>
+      <li><a href="{{ url_for('test') }}" class="nav-link">Test</a></li>
+      <li><a href="{{ url_for('chatbot') }}" class="nav-link active">Asistente IA</a></li>
+      <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
+    </ul>
+    <a href="{{ url_for('test') }}" class="btn-nav">COMENZAR TEST</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- CHATBOT -->
+  <section class="chatbot-section" id="chatbot" style="padding-top: 120px;">
+    <div class="container">
+      <p class="section-label">ASISTENTE VOCACIONAL</p>
+      <h2 class="section-title">Pregúntale a tu<br /><em>orientador IA</em></h2>
+
+      <div class="chat-wrapper">
+        <div class="chat-sugerencias" id="chat-sugerencias">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <p class="sugerencias-label" style="margin:0;">Preguntas frecuentes:</p>
+            <button onclick="limpiarChat()" style="background:transparent; border:1px solid var(--border); color:var(--text-mid); border-radius:50px; padding:5px 14px; font-size:12px; cursor:pointer;">
+              🗑️ Nueva conversación
+            </button>
+          </div>
+          <div class="sugerencias-grid">
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Qué carrera se adapta a alguien que le gusta la tecnología?</button>
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Cuáles son las carreras mejor pagadas en Colombia?</button>
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Cómo saber si tengo perfil para estudiar medicina?</button>
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Qué universidades hay en Boyacá?</button>
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Qué es el ICFES y cómo me preparo?</button>
+            <button class="sugerencia-btn" onclick="usarSugerencia(this)">¿Puedo estudiar gratis con el SENA?</button>
+          </div>
+        </div>
+
+        <div class="chat-mensajes" id="chat-mensajes">
+          <div class="mensaje bot">
+            <div class="msg-avatar">
+              <img src="{{ url_for('static', filename='logo.png') }}" alt="IA">
+            </div>
+            <div class="msg-burbuja">
+              ¡Hola! Soy tu orientador vocacional virtual de la <strong>I.E. San Luis de Gaceno</strong>.
+              Estoy aquí para ayudarte a explorar carreras y resolver dudas sobre educación superior.<br/><br/>
+              ¿En qué te puedo ayudar hoy?
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-typing hidden" id="chat-typing">
+          <div class="msg-avatar">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="IA">
+          </div>
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" class="chat-input"
+            placeholder="Escribe tu pregunta aquí…"
+            onkeydown="if(event.key==='Enter')enviarChat()" />
+          <button class="chat-send-btn" onclick="enviarChat()">Enviar ➤</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Voca-IA" class="logo-img">
+        <span class="logo-text">Voca<span class="logo-accent">-IA</span></span>
+      </div>
+      <p class="footer-copy">© 2026 I.E. San Luis de Gaceno · Orientación Vocacional</p>
+      <p class="footer-credit">Boyacá, Colombia</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
